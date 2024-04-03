@@ -24,8 +24,8 @@ namespace _6502_Emulator.Internals
     public class Cpu 
     {
         public ushort PC, SP; // programmer counter, stack pointers
-        byte A, X, Y; // accumulator, index register X, Index register Y
-        BitArray PS; // Processor status.
+        public byte A, X, Y; // accumulator, index register X, Index register Y
+        byte[] PS; // Processor status.
         Memory memory; // hard coded for now.
 
 
@@ -33,18 +33,18 @@ namespace _6502_Emulator.Internals
         {
             PC = 0xFFFC;
             SP = 0x0100;
-            ProssesorSet(Status.C, false);
-            ProssesorSet(Status.Z, false);
-            ProssesorSet(Status.I, false);
-            ProssesorSet(Status.D, false);
-            ProssesorSet(Status.B, false);
-            ProssesorSet(Status.V, false);
-            ProssesorSet(Status.N, false);
+            ProssesorSet(Status.C, 0);
+            ProssesorSet(Status.Z, 0);
+            ProssesorSet(Status.I, 0);
+            ProssesorSet(Status.D, 0);
+            ProssesorSet(Status.B, 0);
+            ProssesorSet(Status.V, 0);
+            ProssesorSet(Status.N, 0);
             A = 0; X = 0; Y = 0;
             memory.Init();
         }
 
-        byte GrabInstruction(ref int ticker) 
+        public byte GrabInstruction(ref int ticker) 
         {
             byte instruction = memory.GetByte(PC++); 
             PC = PC++;
@@ -54,22 +54,23 @@ namespace _6502_Emulator.Internals
 
         void Run(int tick) 
         {
-            while (tick > 0) 
+            TickReferenceWrapper ticker = new TickReferenceWrapper(ref tick);
+            while (ticker.reference > 0) 
             {
                 byte instruction = GrabInstruction(ref tick);
                 MethodInfo info = Mapper.GetInstructionMethod((InstructionCodes)instruction);
-                tick =- (int)info.Invoke(null, new object[] { this, memory });
+                info.Invoke(null, new object[] { this, memory, ticker });
             }
         }
 
-        bool ProssesorGet(Status status) 
+        public byte ProssesorGet(Status status) 
         {
-            return PS.Get((int)status);
+            return PS[(int)status];
         }
 
-        void ProssesorSet(Status status, bool value) 
+        public void ProssesorSet(Status status, byte value) 
         {
-            PS.Set((int)status, value);
+            PS[(int)status] = value;
         }
     }
 }

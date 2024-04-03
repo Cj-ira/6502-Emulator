@@ -15,10 +15,24 @@ namespace _6502_Emulator.Internals.Insturction
             INS_LDA_IM = 0xA9,
         }
 
-        [InstructionAttribute(InstructionCodes.INS_LDA_IM)]
-        public static int LDA_IM(Cpu cpu, Memory mem) 
+        // C# has ficky controls when moving stuff through invokes via reference, so I decided to make a wrapper instead.
+        public class TickReferenceWrapper 
         {
-            return 0;
+            public int reference;
+
+            public TickReferenceWrapper(ref int tick)
+            {
+                reference = tick;
+            }
+        }
+
+        [InstructionAttribute(InstructionCodes.INS_LDA_IM)]
+        public static void LDA_IM(Cpu cpu, Memory mem, TickReferenceWrapper ticker) 
+        {
+            byte val = cpu.GrabInstruction(ref ticker.reference);
+            cpu.A = val;
+            cpu.ProssesorSet(Status.Z, (cpu.A == 0) ? (byte)0 : (byte)1);
+            cpu.ProssesorSet(Status.N, (cpu.A & 0b10000000) > 0 ? (byte)0 : (byte)1);
         }
     }
 }
