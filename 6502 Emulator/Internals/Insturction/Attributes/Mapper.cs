@@ -8,9 +8,9 @@ using static _6502_Emulator.Internals.Insturction.Instructions;
 
 namespace _6502_Emulator.Internals.Insturction.Attributes
 {
-    public class Mapper
+    public  class Mapper
     {
-        Dictionary<InstructionCodes, MethodInfo> Instructions;
+        internal static Dictionary<InstructionCodes, MethodInfo> Instructions;
 
         public Mapper()
         {
@@ -18,6 +18,11 @@ namespace _6502_Emulator.Internals.Insturction.Attributes
                 .SelectMany(x => x.GetMethods()).Where(y => y.GetCustomAttributes().OfType<InstructionAttribute>().Any())
                 .ToDictionary(x => x.GetCustomAttribute<InstructionAttribute>().InstructionCodes);
             Instructions = methods;
+        }
+
+        public static MethodInfo GetInstructionMethod(InstructionCodes code) 
+        {
+            return Instructions[code];
         }
     }
 }

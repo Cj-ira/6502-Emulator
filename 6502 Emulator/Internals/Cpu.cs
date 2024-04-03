@@ -1,9 +1,12 @@
-﻿using System;
+﻿using _6502_Emulator.Internals.Insturction.Attributes;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using static _6502_Emulator.Internals.Insturction.Instructions;
 
 namespace _6502_Emulator.Internals
 {
@@ -54,7 +57,8 @@ namespace _6502_Emulator.Internals
             while (tick > 0) 
             {
                 byte instruction = GrabInstruction(ref tick);
-
+                MethodInfo info = Mapper.GetInstructionMethod((InstructionCodes)instruction);
+                tick =- (int)info.Invoke(null, new object[] { this, memory });
             }
         }
 
