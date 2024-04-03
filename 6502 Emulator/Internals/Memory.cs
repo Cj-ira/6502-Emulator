@@ -25,5 +25,10 @@ namespace _6502_Emulator.Internals
             }
         }
 
+        public byte GetByte(ushort address) 
+        {
+            return memory[address];
+        }
+
     }
 }

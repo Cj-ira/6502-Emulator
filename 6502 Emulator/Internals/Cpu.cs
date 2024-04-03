@@ -41,6 +41,23 @@ namespace _6502_Emulator.Internals
             memory.Init();
         }
 
+        byte GrabInstruction(ref int ticker) 
+        {
+            byte instruction = memory.GetByte(PC++); 
+            PC = PC++;
+            ticker = ticker--;
+            return instruction;
+        }
+
+        void Run(int tick) 
+        {
+            while (tick > 0) 
+            {
+                byte instruction = GrabInstruction(ref tick);
+
+            }
+        }
+
         bool ProssesorGet(Status status) 
         {
             return PS.Get((int)status);
