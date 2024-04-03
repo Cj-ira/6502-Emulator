@@ -28,8 +28,17 @@ namespace _6502_Emulator.Internals
         byte[] PS; // Processor status.
         Memory memory; // hard coded for now.
 
+        public Cpu()
+        {
+            memory = new Memory();
+            PS = new byte[7];
+            Reset();
 
-        void Reset() 
+            //memory.memory[0xFFFC] = (byte)InstructionCodes.INS_LDA_IM;
+            //memory.memory[0xFFFD] = 0x15;
+        }
+
+        public void Reset() 
         {
             PC = 0xFFFC;
             SP = 0x0100;
@@ -44,22 +53,23 @@ namespace _6502_Emulator.Internals
             memory.Init();
         }
 
-        public byte GrabInstruction(ref int ticker) 
+        public byte GrabInstruction(TickReferenceWrapper ticker) 
         {
             byte instruction = memory.GetByte(PC++); 
             PC = PC++;
-            ticker = ticker--;
+            ticker.reference = ticker.reference-1;
             return instruction;
         }
 
-        void Run(int tick) 
+        public void Run(int tick) 
         {
             TickReferenceWrapper ticker = new TickReferenceWrapper(ref tick);
             while (ticker.reference > 0) 
             {
-                byte instruction = GrabInstruction(ref tick);
-                MethodInfo info = Mapper.GetInstructionMethod((InstructionCodes)instruction);
-                info.Invoke(null, new object[] { this, memory, ticker });
+                byte instruction = GrabInstruction(ticker);
+                MethodInfo? info = Mapper.GetInstructionMethod((InstructionCodes)instruction);
+                if (info != null)
+                    info.Invoke(null, new object[] { this, memory, ticker });
             }
         }
 

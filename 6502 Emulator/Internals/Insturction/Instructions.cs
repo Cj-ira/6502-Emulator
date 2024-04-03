@@ -29,7 +29,7 @@ namespace _6502_Emulator.Internals.Insturction
         [InstructionAttribute(InstructionCodes.INS_LDA_IM)]
         public static void LDA_IM(Cpu cpu, Memory mem, TickReferenceWrapper ticker) 
         {
-            byte val = cpu.GrabInstruction(ref ticker.reference);
+            byte val = cpu.GrabInstruction(ticker);
             cpu.A = val;
             cpu.ProssesorSet(Status.Z, (cpu.A == 0) ? (byte)0 : (byte)1);
             cpu.ProssesorSet(Status.N, (cpu.A & 0b10000000) > 0 ? (byte)0 : (byte)1);

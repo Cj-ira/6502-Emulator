@@ -20,9 +20,9 @@ namespace _6502_Emulator.Internals.Insturction.Attributes
             Instructions = methods;
         }
 
-        public static MethodInfo GetInstructionMethod(InstructionCodes code) 
+        public static MethodInfo? GetInstructionMethod(InstructionCodes code) 
         {
-            return Instructions[code];
+            return Instructions.TryGetValue(code, out var method) ? method : null;
         }
     }
 }
